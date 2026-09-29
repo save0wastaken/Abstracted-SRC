@@ -239,7 +239,27 @@ function Abstracted:CreateWindow(cfg)
         end 
     end)
 
-    self.Tooltip = Engine.Create("Frame", { Size = UDim2.new(0, 200, 0, 30), BackgroundColor3 = Theme.Topbar, Visible = false, ZIndex = 100, Parent = self.Container }, { Engine.Create("UICorner", { CornerRadius = UDim.new(0, 6) }), Engine.Create("TextLabel", { Name = "Label", Size = UDim2.new(1, -10, 1, -10), Position = UDim2.new(0, 5, 0, 5), BackgroundTransparency = 1, Font = Enum.Font.Gotham, TextSize = 12, TextColor3 = Theme.Text, TextWrapped = true, TextYAlignment = Enum.TextYAlignment.Center }) })
+    self.Tooltip = Engine.Create("Frame", { 
+        Size = UDim2.new(0, 200, 0, 30), 
+        BackgroundColor3 = Theme.Topbar, 
+        Visible = false, 
+        ZIndex = 100, 
+        Parent = self.Container 
+    }, { 
+        Engine.Create("UICorner", { CornerRadius = UDim.new(0, 6) }), 
+        Engine.Create("TextLabel", { 
+            Name = "Label", 
+            Size = UDim2.new(1, -10, 1, -10), 
+            Position = UDim2.new(0, 5, 0, 5), 
+            BackgroundTransparency = 1, 
+            Font = Enum.Font.Gotham, 
+            TextSize = 12, 
+            TextColor3 = Theme.Text, 
+            TextWrapped = true, 
+            TextYAlignment = Enum.TextYAlignment.Center,
+            ZIndex = 101 -- Forces the text to render OVER the dark gray background
+        }) 
+    })
     self.Notifs = Engine.Create("Frame", { Size = UDim2.new(0, 250, 1, -20), Position = UDim2.new(1, -260, 0, 10), BackgroundTransparency = 1, Parent = self.Container }, { Engine.Create("UIListLayout", { VerticalAlignment = Enum.VerticalAlignment.Bottom, Padding = UDim.new(0, 10) }) })
     
     Engine.Connect(self.Main.Topbar.Close.MouseButton1Click, function() self:Unload() end)
