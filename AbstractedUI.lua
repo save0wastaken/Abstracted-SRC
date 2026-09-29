@@ -1,6 +1,5 @@
 --[[
     ABSTRACTED FRAMEWORK API (Part 2)
-    Dynamic Web API Translation Engine & External Loading
 ]]
 
 local Engine = loadstring(game:HttpGet("https://raw.githubusercontent.com/save0wastaken/Abstracted-SRC/main/AbstractedEngine.lua"))()
@@ -12,7 +11,7 @@ local TextService = game:GetService("TextService")
 local HttpService = game:GetService("HttpService")
 
 local Abstracted = {
-    Version = "8.2.0-Framework",
+    Version = "8.3.0-Framework",
     Elements = {}, 
     LocalizedObjects = {}, 
     CurrentLocale = "en",
@@ -357,7 +356,11 @@ function SectionMethods:AddButton(c)
     })
     Abstracted:RegisterLoc(btn.Lbl, c.Name)
     Engine.ApplyTag(btn, c.Tag, 10)
-    Engine.ApplyTooltip(btn, function() return Abstracted:GetLocAsync(c.Tooltip) end, self.Window)
+    
+    if c.Tooltip then 
+        Engine.ApplyTooltip(btn, function() return Abstracted:GetLocAsync(c.Tooltip) end, self.Window) 
+    end
+    
     table.insert(Abstracted.Elements, { Name = c.Name, Instance = btn })
     Engine.Connect(btn.MouseButton1Click, function() if c.Callback then c.Callback() end end)
 end
@@ -374,7 +377,11 @@ function SectionMethods:AddToggle(c)
     })
     Abstracted:RegisterLoc(tog.Lbl, c.Name)
     Engine.ApplyTag(tog, c.Tag, 50)
-    Engine.ApplyTooltip(tog, function() return Abstracted:GetLocAsync(c.Tooltip) end, self.Window)
+    
+    if c.Tooltip then 
+        Engine.ApplyTooltip(tog, function() return Abstracted:GetLocAsync(c.Tooltip) end, self.Window) 
+    end
+    
     table.insert(Abstracted.Elements, { Name = c.Name, Instance = tog })
     Engine.Connect(tog.MouseButton1Click, function() 
         s = not s
@@ -395,7 +402,11 @@ function SectionMethods:AddSlider(c)
     
     Abstracted:RegisterLoc(sl.Title, c.Name, function(trans) sl.Title.Text = trans .. " : " .. cur end)
     Engine.ApplyTag(sl, c.Tag, 10, 10)
-    Engine.ApplyTooltip(sl, function() return Abstracted:GetLocAsync(c.Tooltip) end, self.Window)
+    
+    if c.Tooltip then 
+        Engine.ApplyTooltip(sl, function() return Abstracted:GetLocAsync(c.Tooltip) end, self.Window) 
+    end
+    
     table.insert(Abstracted.Elements, { Name = c.Name, Instance = sl })
     
     local drag = false
@@ -417,7 +428,10 @@ function SectionMethods:AddDropdown(c)
     local open, sel = false, c.Multi and {} or (c.Default or "")
     local dd = Engine.Create("Frame", { Size = UDim2.new(1, 0, 0, 35), ClipsDescendants = true, BackgroundColor3 = Theme.Hover, Parent = self.Items }, { Engine.Create("UICorner", { CornerRadius = UDim.new(0, 4) }) })
     local top = Engine.Create("TextButton", { Size = UDim2.new(1, 0, 0, 35), BackgroundTransparency = 1, Text = "", Parent = dd })
-    local lbl = Engine.Create("TextLabel", { Size = UDim2.new(1, -60, 1, 0), Position = UDim2.new(0, 10, 0, 0), BackgroundTransparency = 1, Text = "", Font = Enum.Font.Gotham, TextSize = 13, TextColor3 = Theme.Text, TextXAlignment = Enum.TextXAlignment.Left, Parent = top })
+    
+    -- Added TextTruncate to keep the label safe from running off
+    local lbl = Engine.Create("TextLabel", { Size = UDim2.new(1, -60, 1, 0), Position = UDim2.new(0, 10, 0, 0), BackgroundTransparency = 1, Text = "", Font = Enum.Font.Gotham, TextSize = 13, TextColor3 = Theme.Text, TextXAlignment = Enum.TextXAlignment.Left, TextTruncate = Enum.TextTruncate.AtEnd, Parent = top })
+    
     local lst = Engine.Create("Frame", { Size = UDim2.new(1, -10, 1, -40), Position = UDim2.new(0, 5, 0, 35), BackgroundTransparency = 1, Visible = false, Parent = dd }, { Engine.Create("UIListLayout", { Padding = UDim.new(0, 2) }) })
 
     local function getC(k) return Abstracted.TranslationCache[Abstracted.CurrentLocale .. "_" .. k] or k end
@@ -435,7 +449,11 @@ function SectionMethods:AddDropdown(c)
     Abstracted:RegisterLoc(lbl, c.Name, function() upd() end)
     
     Engine.ApplyTag(top, c.Tag, 10)
-    Engine.ApplyTooltip(top, function() return Abstracted:GetLocAsync(c.Tooltip) end, self.Window)
+    
+    if c.Tooltip then 
+        Engine.ApplyTooltip(top, function() return Abstracted:GetLocAsync(c.Tooltip) end, self.Window) 
+    end
+    
     table.insert(Abstracted.Elements, { Name = c.Name, Instance = dd })
 
     for _, opt in ipairs(c.Options) do
@@ -471,7 +489,11 @@ function SectionMethods:AddKeybind(c)
     })
     Abstracted:RegisterLoc(kb.Lbl, c.Name)
     Engine.ApplyTag(kb, c.Tag, 65)
-    Engine.ApplyTooltip(kb, function() return Abstracted:GetLocAsync(c.Tooltip) end, self.Window)
+    
+    if c.Tooltip then 
+        Engine.ApplyTooltip(kb, function() return Abstracted:GetLocAsync(c.Tooltip) end, self.Window) 
+    end
+    
     table.insert(Abstracted.Elements, { Name = c.Name, Instance = kb })
 
     local bindLabel = nil
@@ -528,7 +550,11 @@ function SectionMethods:AddColorPicker(c)
     mkSl("R", col.R, 1); mkSl("G", col.G, 2); mkSl("B", col.B, 3)
 
     Engine.ApplyTag(top, c.Tag, 45)
-    Engine.ApplyTooltip(cp, function() return Abstracted:GetLocAsync(c.Tooltip) end, self.Window)
+    
+    if c.Tooltip then 
+        Engine.ApplyTooltip(cp, function() return Abstracted:GetLocAsync(c.Tooltip) end, self.Window) 
+    end
+    
     table.insert(Abstracted.Elements, { Name = c.Name, Instance = cp })
     Engine.Connect(top.MouseButton1Click, function() open = not open; Engine.Tween(cp, { Size = UDim2.new(1, 0, 0, open and 130 or 35) }, 0.2) end)
 end
@@ -539,7 +565,11 @@ function SectionMethods:AddStat(c)
         Engine.Create("TextLabel", { Name = "Val", Size = UDim2.new(0.5, 0, 1, 0), Position = UDim2.new(0.5, 0, 0, 0), BackgroundTransparency = 1, Text = tostring(c.Default or ""), Font = Enum.Font.GothamBold, TextSize = 12, TextColor3 = Theme.Accent, TextXAlignment = Enum.TextXAlignment.Right })
     })
     Abstracted:RegisterLoc(st.Lbl, c.Name)
-    Engine.ApplyTooltip(st, function() return Abstracted:GetLocAsync(c.Tooltip) end, self.Window)
+    
+    if c.Tooltip then 
+        Engine.ApplyTooltip(st, function() return Abstracted:GetLocAsync(c.Tooltip) end, self.Window) 
+    end
+    
     return { Update = function(self, val) st.Val.Text = tostring(val) end }
 end
 
