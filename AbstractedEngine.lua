@@ -62,19 +62,22 @@ function Engine.ApplyTooltip(inst, textData, win)
     
     Engine.Connect(inst.MouseEnter, function()
         isHovered = true
+        
+        -- Instantly show a loading state
         win.Tooltip.Label.Text = "..."
         win.Tooltip.Size = UDim2.new(0, 40, 0, 25)
+        win.Tooltip.Visible = true
         
-        -- Run the fetch without freezing the UI
         task.spawn(function()
             local resolvedText = type(textData) == "function" and textData() or textData
             resolvedText = resolvedText and tostring(resolvedText) or ""
             
             if isHovered and win.Tooltip and resolvedText ~= "" then
                 win.Tooltip.Label.Text = resolvedText
-                -- Increased Y bound to 1000 so tall wrapping text is never clipped
                 local bounds = TextService:GetTextSize(resolvedText, 12, Enum.Font.Gotham, Vector2.new(300, 1000))
                 win.Tooltip.Size = UDim2.new(0, bounds.X + 20, 0, bounds.Y + 10)
+            elseif isHovered and win.Tooltip and resolvedText == "" then
+                win.Tooltip.Visible = false
             end
         end)
         
