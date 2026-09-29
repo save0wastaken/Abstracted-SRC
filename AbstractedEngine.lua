@@ -57,24 +57,49 @@ function Engine.GetSafeParent()
 end
 
 function Engine.ApplyTooltip(inst, textData, win)
-	if not textData or not win or not win.Tooltip then return end
-	local isHovered = false
-
-	Engine.Connect(inst.MouseEnter, function()
-		isHovered = true
-		-- Evaluates the localized text exactly at the moment of hovering
-		local text = type(textData) == "function" and textData() or textData
-		win.Tooltip.Label.Text = text
-
-		local bounds = TextService:GetTextSize(text, 12, Enum.Font.Gotham, Vector2.new(300, 100))
-		win.Tooltip.Size = UDim2.new(0, bounds.X + 20, 0, bounds.Y + 10)
-
-		task.spawn(function()
-			task.wait(0.2)
-			if isHovered and win.Tooltip and not win.IsMinimized then
-				win.Tooltip.Visible = true
-			end
-		end)
+    if not textData or not win or not win.Tooltip then return end
+    local isHovered = false
+    
+    Engine.Connect(inst.MouseEnter, function()
+        isHovered = true
+        
+        -- Default loading size while waiting for web response
+        win.Tooltip.Label.Text = "..." 
+        win.Tooltip.Size = UDim2.new(0, 40, 0, 25)
+        
+        -- Fetch translation in the background without pausing the UI
+        task.spawn(function()
+            local text = type(textData) == "function" and textData() or textData
+            if isHovered and win.Tooltip then
+                win.Tooltip.Label.Text = text
+                local bounds = TextService:GetTextSize(text, 12, Enum.Font.Gotham, Vector2.new(300, 100))
+                win.Tooltip.Size = UDim2.new(0, bounds.X + 20, 0, bounds.Y + 10)
+            end
+        end)
+        
+        -- Start visibility timer
+        task.spawn(function()
+            task.wait(0.2)
+            if isHovered and win.Tooltip and not win.IsMinimized then
+                win.Tooltip.Visible = true
+            end
+        end)
+        
+        -- Smooth tracking loop
+        while isHovered and win.Tooltip do
+            local ms = UserInputService:GetMouseLocation()
+            if win.Container and win.Container.Parent then
+                win.Tooltip.Position = UDim2.new(0, math.clamp(ms.X + 15, 0, win.Container.AbsoluteSize.X - win.Tooltip.Size.X.Offset), 0, ms.Y + 15)
+            end
+            RunService.RenderStepped:Wait()
+        end
+    end)
+    
+    Engine.Connect(inst.MouseLeave, function() 
+        isHovered = false
+        if win.Tooltip then win.Tooltip.Visible = false end
+    end)
+end
 
 		while isHovered and win.Tooltip do
 			local ms = UserInputService:GetMouseLocation()
