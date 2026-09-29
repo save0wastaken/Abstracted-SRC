@@ -1,5 +1,6 @@
 --[[
     ABSTRACTED CORE ENGINE (Part 1)
+    Bulletproof utility, tweening, and tracking engine.
 ]]
 
 local TweenService = game:GetService("TweenService")
@@ -62,22 +63,19 @@ function Engine.ApplyTooltip(inst, textData, win)
     
     Engine.Connect(inst.MouseEnter, function()
         isHovered = true
-        
-        -- Instantly show a loading state
         win.Tooltip.Label.Text = "..."
         win.Tooltip.Size = UDim2.new(0, 40, 0, 25)
-        win.Tooltip.Visible = true
         
+        -- Run the fetch without freezing the UI
         task.spawn(function()
             local resolvedText = type(textData) == "function" and textData() or textData
             resolvedText = resolvedText and tostring(resolvedText) or ""
             
             if isHovered and win.Tooltip and resolvedText ~= "" then
                 win.Tooltip.Label.Text = resolvedText
+                -- Increased Y bound to 1000 so tall wrapping text is never clipped
                 local bounds = TextService:GetTextSize(resolvedText, 12, Enum.Font.Gotham, Vector2.new(300, 1000))
                 win.Tooltip.Size = UDim2.new(0, bounds.X + 20, 0, bounds.Y + 10)
-            elseif isHovered and win.Tooltip and resolvedText == "" then
-                win.Tooltip.Visible = false
             end
         end)
         
@@ -90,28 +88,6 @@ function Engine.ApplyTooltip(inst, textData, win)
         end)
         
         -- Render loop
-        while isHovered and win.Tooltip do
-            local ms = UserInputService:GetMouseLocation()
-            if win.Container and win.Container.Parent then
-                win.Tooltip.Position = UDim2.new(0, math.clamp(ms.X + 15, 0, win.Container.AbsoluteSize.X - win.Tooltip.Size.X.Offset), 0, ms.Y + 15)
-            end
-            RunService.RenderStepped:Wait()
-        end
-    end)
-    
-    Engine.Connect(inst.MouseLeave, function() 
-        isHovered = false
-        if win.Tooltip then win.Tooltip.Visible = false end
-    end)
-end
-        
-        task.spawn(function()
-            task.wait(0.2)
-            if isHovered and win.Tooltip and not win.IsMinimized and resolvedText ~= "" then
-                win.Tooltip.Visible = true
-            end
-        end)
-        
         while isHovered and win.Tooltip do
             local ms = UserInputService:GetMouseLocation()
             if win.Container and win.Container.Parent then
