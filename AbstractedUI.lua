@@ -3,8 +3,7 @@
 ]]
 
 -- Dynamically loads your Engine (Abstracted Engine Defaulted)
-local Engine = loadstring(game:HttpGet("https://raw.githubusercontent.com/save0wastaken/Abstracted-SRC/refs/heads/main/AbstractedEngine.lua"))()
-
+local Engine = loadstring(game:HttpGet("https://raw.githubusercontent.com/save0wastaken/Abstracted-SRC/refs/heads/main/AbstractedEngine.lua?t=" .. tostring(tick())))()
 local Theme = Engine.Themes.Default
 local UserInputService = game:GetService("UserInputService")
 local Players = game:GetService("Players")
