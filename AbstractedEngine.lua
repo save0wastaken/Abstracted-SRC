@@ -1,6 +1,5 @@
 --[[
     ABSTRACTED CORE ENGINE (Part 1)
-    Bulletproof utility, tweening, and tracking engine.
 ]]
 
 local TweenService = game:GetService("TweenService")
@@ -10,7 +9,7 @@ local Players = game:GetService("Players")
 local TextService = game:GetService("TextService")
 
 local Engine = {
-    Version = "1.1.0-Engine",
+    Version = "1.0.0-Engine",
     Connections = {},
     Themes = {
         Default = { 
@@ -66,18 +65,21 @@ function Engine.ApplyTooltip(inst, textData, win)
         win.Tooltip.Label.Text = "..."
         win.Tooltip.Size = UDim2.new(0, 40, 0, 25)
         
+        local resolvedText = ""
+        
+        -- Async fetch so the tracking loop below starts instantly
         task.spawn(function()
-            local text = type(textData) == "function" and textData() or textData
-            if isHovered and win.Tooltip then
-                win.Tooltip.Label.Text = text
-                local bounds = TextService:GetTextSize(text, 12, Enum.Font.Gotham, Vector2.new(300, 100))
+            resolvedText = type(textData) == "function" and textData() or textData
+            if isHovered and win.Tooltip and resolvedText and resolvedText ~= "" then
+                win.Tooltip.Label.Text = resolvedText
+                local bounds = TextService:GetTextSize(resolvedText, 12, Enum.Font.Gotham, Vector2.new(300, 100))
                 win.Tooltip.Size = UDim2.new(0, bounds.X + 20, 0, bounds.Y + 10)
             end
         end)
         
         task.spawn(function()
             task.wait(0.2)
-            if isHovered and win.Tooltip and not win.IsMinimized then
+            if isHovered and win.Tooltip and not win.IsMinimized and resolvedText ~= "" then
                 win.Tooltip.Visible = true
             end
         end)
