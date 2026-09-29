@@ -112,7 +112,14 @@ function Abstracted:CreateWindow(cfg)
     local parent = Engine.GetSafeParent()
     
     for _, ui in ipairs(parent:GetChildren()) do if ui.Name == "AbstractedPremium" then ui:Destroy() end end
-    self.Container = Engine.Create("ScreenGui", { Name = "AbstractedPremium", Parent = parent, ResetOnSpawn = false, DisplayOrder = 999, IgnoreGuiInset = true })
+    self.Container = Engine.Create("ScreenGui", { 
+        Name = "AbstractedPremium", 
+        Parent = parent, 
+        ResetOnSpawn = false, 
+        DisplayOrder = 999, 
+        IgnoreGuiInset = true,
+        ZIndexBehavior = Enum.ZIndexBehavior.Sibling -- Fixes GUI layer overlap bugs
+    })
     
     local loader = Engine.Create("Frame", { Size = UDim2.new(0, 280, 0, 90), AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.new(0.5, 0, 0.5, 0), BackgroundColor3 = Theme.Bg, Parent = self.Container, ClipsDescendants = true }, {
         Engine.Create("UICorner", { CornerRadius = UDim.new(0, 8) }),
