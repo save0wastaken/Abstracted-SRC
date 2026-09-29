@@ -1,5 +1,6 @@
 --[[
     ABSTRACTED FRAMEWORK API (Part 2)
+    Dynamic Web API Translation Engine & External Loading
 ]]
 
 local Engine = loadstring(game:HttpGet("https://raw.githubusercontent.com/save0wastaken/Abstracted-SRC/main/AbstractedEngine.lua"))()
@@ -11,7 +12,7 @@ local TextService = game:GetService("TextService")
 local HttpService = game:GetService("HttpService")
 
 local Abstracted = {
-    Version = "8.3.0-Framework",
+    Version = "8.4.0-Framework",
     Elements = {}, 
     LocalizedObjects = {}, 
     CurrentLocale = "en",
@@ -112,13 +113,15 @@ function Abstracted:CreateWindow(cfg)
     local parent = Engine.GetSafeParent()
     
     for _, ui in ipairs(parent:GetChildren()) do if ui.Name == "AbstractedPremium" then ui:Destroy() end end
+    
+    -- ZIndexBehavior fix applied
     self.Container = Engine.Create("ScreenGui", { 
         Name = "AbstractedPremium", 
         Parent = parent, 
         ResetOnSpawn = false, 
         DisplayOrder = 999, 
         IgnoreGuiInset = true,
-        ZIndexBehavior = Enum.ZIndexBehavior.Sibling -- Fixes GUI layer overlap bugs
+        ZIndexBehavior = Enum.ZIndexBehavior.Sibling 
     })
     
     local loader = Engine.Create("Frame", { Size = UDim2.new(0, 280, 0, 90), AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.new(0.5, 0, 0.5, 0), BackgroundColor3 = Theme.Bg, Parent = self.Container, ClipsDescendants = true }, {
@@ -239,6 +242,7 @@ function Abstracted:CreateWindow(cfg)
         end 
     end)
 
+    -- Tooltip ZIndex bug fixed
     self.Tooltip = Engine.Create("Frame", { 
         Size = UDim2.new(0, 200, 0, 30), 
         BackgroundColor3 = Theme.Topbar, 
@@ -257,9 +261,10 @@ function Abstracted:CreateWindow(cfg)
             TextColor3 = Theme.Text, 
             TextWrapped = true, 
             TextYAlignment = Enum.TextYAlignment.Center,
-            ZIndex = 101 -- Forces the text to render OVER the dark gray background
+            ZIndex = 101
         }) 
     })
+    
     self.Notifs = Engine.Create("Frame", { Size = UDim2.new(0, 250, 1, -20), Position = UDim2.new(1, -260, 0, 10), BackgroundTransparency = 1, Parent = self.Container }, { Engine.Create("UIListLayout", { VerticalAlignment = Enum.VerticalAlignment.Bottom, Padding = UDim.new(0, 10) }) })
     
     Engine.Connect(self.Main.Topbar.Close.MouseButton1Click, function() self:Unload() end)
@@ -456,7 +461,7 @@ function SectionMethods:AddDropdown(c)
     local dd = Engine.Create("Frame", { Size = UDim2.new(1, 0, 0, 35), ClipsDescendants = true, BackgroundColor3 = Theme.Hover, Parent = self.Items }, { Engine.Create("UICorner", { CornerRadius = UDim.new(0, 4) }) })
     local top = Engine.Create("TextButton", { Size = UDim2.new(1, 0, 0, 35), BackgroundTransparency = 1, Text = "", Parent = dd })
     
-    -- Added TextTruncate to keep the label safe from running off
+    -- TextTruncate added to fix option runoffs
     local lbl = Engine.Create("TextLabel", { Size = UDim2.new(1, -60, 1, 0), Position = UDim2.new(0, 10, 0, 0), BackgroundTransparency = 1, Text = "", Font = Enum.Font.Gotham, TextSize = 13, TextColor3 = Theme.Text, TextXAlignment = Enum.TextXAlignment.Left, TextTruncate = Enum.TextTruncate.AtEnd, Parent = top })
     
     local lst = Engine.Create("Frame", { Size = UDim2.new(1, -10, 1, -40), Position = UDim2.new(0, 5, 0, 35), BackgroundTransparency = 1, Visible = false, Parent = dd }, { Engine.Create("UIListLayout", { Padding = UDim.new(0, 2) }) })
